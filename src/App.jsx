@@ -5,6 +5,7 @@ import AppLayout from "./layout/AppLayout.jsx";
 import Payments from './pages/Payments/Payments.jsx';
 import CreditCardPayment from './pages/Payments/CreditCardPayment.jsx';
 import InsurancePayment from './pages/Payments/InsurancePayment.jsx';
+import PaymentSuccess from './pages/Payments/PaymentSuccess.jsx';
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import PatientsNew from "./pages/PatientsNew.jsx";
@@ -52,6 +53,11 @@ export default function App() {
                 path="/appointments/:id"
                 element={<AppointmentDetails />}
               />
+              {/* Patient Payments */}
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/payments/credit-card" element={<CreditCardPayment />} />
+              <Route path="/payments/insurance" element={<InsurancePayment />} />
+              <Route path="/payments/success/:id" element={<PaymentSuccess />} />
             </Route>
           </Route>
 
@@ -83,7 +89,7 @@ export default function App() {
                 </AppLayout>
               }
             />
-            {/* Hospital selection is now part of the Billing flow */}
+            {/* Staff billing section (if still needed for staff workflow) */}
             <Route
               path="/patients"
               element={
@@ -108,30 +114,7 @@ export default function App() {
                 </AppLayout>
               }
             />
-            <Route
-              path="/billing"
-              element={
-                <AppLayout>
-                  <Payments />
-                </AppLayout>
-              }
-            />
-            <Route
-              path="/billing/credit-card"
-              element={
-                <AppLayout>
-                  <CreditCardPayment />
-                </AppLayout>
-              }
-            />
-            <Route
-              path="/billing/insurance"
-              element={
-                <AppLayout>
-                  <InsurancePayment />
-                </AppLayout>
-              }
-            />
+            {/* Removed /billing routes to avoid public access; now under /payments (patient-only) */}
             <Route
               path="/reports"
               element={

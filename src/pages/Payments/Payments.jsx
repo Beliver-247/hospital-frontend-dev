@@ -69,9 +69,12 @@ export default function Payments() {
   function handleContinue() {
     if (!selected) return alert('Please select a payment method');
     if (selected === 'card') {
-      navigate('/billing/credit-card', { state: { total } });
+      navigate('/payments/credit-card', { state: { total } });
+    } else if (selected === 'insurance') {
+      navigate('/payments/insurance', { state: { total } });
     } else {
-      navigate('/billing/confirm', { state: { method: selected, total } });
+      // cash or others: stay on summary or handle at reception
+      alert('Please proceed to the reception desk to complete cash payment.');
     }
   }
 
@@ -103,11 +106,11 @@ export default function Payments() {
             selected={selected === 'card'}
             onSelect={(id) => {
               setSelected(id);
-              if (id === 'card') navigate('/billing/credit-card', { state: { total } });
+              if (id === 'card') navigate('/payments/credit-card', { state: { total } });
             }}
           />
           <PaymentCard id="cash" title="Cash" desc="Pay with cash at the reception desk" icon="cash" selected={selected === 'cash'} onSelect={(id) => setSelected(id)} />
-          <PaymentCard id="insurance" title="Insurance" desc="Use your health insurance coverage" icon="insurance" selected={selected === 'insurance'} onSelect={(id) => { setSelected(id); navigate('/billing/insurance', { state: { total } }); }} />
+          <PaymentCard id="insurance" title="Insurance" desc="Use your health insurance coverage" icon="insurance" selected={selected === 'insurance'} onSelect={(id) => { setSelected(id); navigate('/payments/insurance', { state: { total } }); }} />
         </div>
 
         <div className="mt-6 flex items-start gap-6">
