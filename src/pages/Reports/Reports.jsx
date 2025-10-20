@@ -283,8 +283,6 @@ export default function Reports() {
                   onChange={(e) => setReportParams(prev => ({ ...prev, reportType: e.target.value }))}
                 >
                   <option value="patients_list">Patient List</option>
-                  <option value="appointments_list">Appointments List</option>
-                  <option value="appointments_stats">Appointments Statistics</option>
                 </select>
               </div>
             </div>

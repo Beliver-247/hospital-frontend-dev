@@ -2,10 +2,9 @@
 import { NavLink } from 'react-router-dom';
 
 const reportsNavItems = [
-  { to: '/reports', label: 'Generate Reports', icon: '📊' },
+  { to: '/reports', label: 'Dashboard', icon: '📈' },
+  { to: '/reports/gen/land', label: 'Generate Reports', icon: '📊' },
   { to: '/reports/history', label: 'Report History', icon: '📋' },
-  { to: '/reports/templates', label: 'Report Templates', icon: '📄' },
-  { to: '/reports/analytics', label: 'Report Analytics', icon: '📈' },
 ];
 
 const healthcareNavItems = [
