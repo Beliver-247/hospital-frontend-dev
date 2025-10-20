@@ -12,9 +12,9 @@ import PatientsNew from "./pages/PatientsNew.jsx";
 import PatientsDetail from "./pages/PatientsDetail.jsx";
 import PatientsEdit from "./pages/PatientsEdit.jsx";
 import PatientsSearch from "./pages/PatientsSearch.jsx";
-import ReportsLayout from "./layout/ReportsLayout.jsx";
-import Reports from "./pages/Reports.jsx";
-import ReportHistory from "./pages/ReportHistory.jsx";
+import ReportsLayout from "./layout/Reports/ReportsLayout.jsx";
+import Reports from "./pages/Reports/Reports.jsx";
+import ReportHistory from "./pages/Reports/ReportHistory.jsx";
 import DoctorsNew from "./pages/DoctorsNew.jsx";
 import DoctorsList from "./pages/DoctorsList.jsx";
 import PatientDash from "./pages/Patient-Dash.jsx";
@@ -22,6 +22,9 @@ import Schedule from "./pages/Schedule.jsx";
 import MyAppointments from "./pages/MyAppointments.jsx";
 import AppointmentDetails from "./pages/AppointmentDetails.jsx";
 import PatientLayout from "./layout/PatientLayout.jsx";
+import AdDashboard from "./pages/Reports/AdDashboard.jsx";
+import AppointmentsReports from "./pages/AppointmentsReports.jsx";
+import ReportsLandingPage from "./pages/Reports/ReportsLandingPage.jsx";
 
 const qc = new QueryClient();
 
@@ -119,6 +122,22 @@ export default function App() {
               path="/reports"
               element={
                 <ReportsLayout>
+                  <AdDashboard />
+                </ReportsLayout>
+              }
+            />
+            <Route
+              path="/reports/gen/land"
+              element={
+                <ReportsLayout>
+                  <ReportsLandingPage />
+                </ReportsLayout>
+              }
+            />
+            <Route
+              path="/reports/generate"
+              element={
+                <ReportsLayout>
                   <Reports />
                 </ReportsLayout>
               }
@@ -128,6 +147,14 @@ export default function App() {
               element={
                 <ReportsLayout>
                   <ReportHistory />
+                </ReportsLayout>
+              }
+            />
+                        <Route
+              path="/reports/appointments"
+              element={
+                <ReportsLayout>
+                  <AppointmentsReports />
                 </ReportsLayout>
               }
             />

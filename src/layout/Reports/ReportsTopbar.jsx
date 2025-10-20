@@ -18,8 +18,6 @@ export default function ReportsTopbar() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <span>Reports</span>
-        <span>›</span>
-        <span className="font-medium text-gray-900">Generate Patient Reports</span>
       </div>
 
       {/* Search and Actions */}
@@ -37,16 +35,6 @@ export default function ReportsTopbar() {
             🔍
           </div>
         </form>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            Export All
-          </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
-            New Report
-          </button>
-        </div>
       </div>
     </header>
   );

@@ -54,10 +54,15 @@ export default function ReportHistory() {
     fetchReports(1);
   }, [filters]);
 
-  // Handle download
-  const handleDownload = async (reportId, format = 'json') => {
+  // Handle download PDF
+  const handleDownload = async (reportId) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/reports/${reportId}/download?format=${format}`);
+      const response = await fetch(`http://localhost:4000/api/reports/${reportId}/download?format=pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+      
       const blob = await response.blob();
       
       const url = window.URL.createObjectURL(blob);
@@ -66,7 +71,7 @@ export default function ReportHistory() {
       
       // Extract filename from Content-Disposition header or generate one
       const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = `report_${reportId}.${format}`;
+      let filename = `report_${reportId}.pdf`;
       
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="(.+)"/);
@@ -111,9 +116,36 @@ export default function ReportHistory() {
     }
   };
 
-  // Handle view (open in new tab/modal)
-  const handleView = (reportId) => {
-    window.open(`/reports/${reportId}`, '_blank');
+  // Handle view PDF in new tab
+  const handleView = async (reportId) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/reports/${reportId}/download`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch PDF');
+      }
+      
+      const blob = await response.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+      
+      // Open PDF in new tab
+      window.open(pdfUrl, '_blank');
+      
+      // Optional: Clean up the URL after some time
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 10000);
+      
+    } catch (error) {
+      console.error('View failed:', error);
+      alert('Failed to open PDF. Please try again.');
+    }
+  };
+
+  // Alternative handleView if your API serves PDFs directly
+  const handleViewDirect = (reportId) => {
+    // Direct link to PDF - adjust the URL according to your API
+    window.open(`http://localhost:4000/api/reports/${reportId}`, '_blank');
   };
 
   // Handle pagination
@@ -268,28 +300,25 @@ export default function ReportHistory() {
                     {report.size}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <button 
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => handleDownload(report.id, 'json')}
-                      >
-                        JSON
-                      </button>
-                      <button 
-                        className="text-green-600 hover:text-green-800"
-                        onClick={() => handleDownload(report.id, 'csv')}
-                      >
-                        CSV
-                      </button>
-                      <button 
-                        className="text-gray-600 hover:text-gray-800"
+                        className="text-blue-600 hover:text-blue-800 font-medium"
                         onClick={() => handleView(report.id)}
+                        title="View PDF"
                       >
                         View
                       </button>
                       <button 
-                        className="text-red-600 hover:text-red-800"
+                        className="text-green-600 hover:text-green-800 font-medium"
+                        onClick={() => handleDownload(report.id)}
+                        title="Download PDF"
+                      >
+                        Download
+                      </button>
+                      <button 
+                        className="text-red-600 hover:text-red-800 font-medium"
                         onClick={() => handleDelete(report.id)}
+                        title="Delete Report"
                       >
                         Delete
                       </button>

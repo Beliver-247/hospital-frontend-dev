@@ -1,6 +1,6 @@
 // src/layout/ReportsLayout.jsx
-import ReportsSidebar from '../layout/ReportsSidebar.jsx';
-import ReportsTopbar from '../layout/ReportsTopbar.jsx';
+import ReportsSidebar from './ReportsSidebar.jsx';
+import ReportsTopbar from './ReportsTopbar.jsx';
 
 export default function ReportsLayout({ children }) {
   return (
