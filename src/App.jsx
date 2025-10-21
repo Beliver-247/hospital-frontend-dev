@@ -47,7 +47,7 @@ export default function App() {
           </Route>
 
           {/* Protected (patient-only) */}
-          <Route element={<ProtectedRoute roles={["PATIENT"]} />}>
+          <Route element={<ProtectedRoute roles={["PATIENT","DOCTOR","STAFF"]} />}>
             <Route element={<PatientLayout />}>
               <Route path="/PatientDash" element={<PatientDash />} />
               <Route path="/schedule" element={<Schedule />} />
