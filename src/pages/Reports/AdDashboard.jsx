@@ -1,6 +1,45 @@
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from "axios";
+
+// ✅ Reusable Reports Summary Card Component
+function ReportsSummaryCard() {
+  const [reportCount, setReportCount] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchReportCount = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/reports/history");
+        if (response.data?.success) {
+          setReportCount(response.data.data.pagination.totalReports);
+        }
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+        setError("Failed to load report count");
+      }
+    };
+    fetchReportCount();
+  }, []);
+
+  return (
+    <div className="bg-white rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="text-sm text-gray-500 mb-1">Reports Generated</div>
+
+      {error ? (
+        <div className="text-red-500 text-sm">{error}</div>
+      ) : reportCount === null ? (
+        <div className="text-gray-400 text-sm">Loading...</div>
+      ) : (
+        <>
+          <div className="text-2xl font-bold">{reportCount.toLocaleString()}</div>
+          <div className="text-sm text-green-600">↑ +5% from last month</div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -36,7 +75,7 @@ export default function Dashboard() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Healthcare Admin Portal</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Healthcare Reporting & Data Analytics</h1>
         <p className="text-gray-600 mt-2">Welcome, Administrator</p>
         <p className="text-gray-500 text-sm">Monitor and manage your healthcare system</p>
       </div>
@@ -44,17 +83,7 @@ export default function Dashboard() {
       {/* System Overview */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">System Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {/* Navigation */}
-          <div className="bg-white rounded-lg border p-4">
-            <div className="space-y-2">
-              <div className="font-medium">Patient Management</div>
-              <div className="font-medium">Staff Management</div>
-              <div className="font-medium">Reports</div>
-              <div className="font-medium">System Settings</div>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">    
           {/* Stats Cards */}
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-500 mb-1">Total Patients</div>
@@ -65,22 +94,24 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-500 mb-1">Patients with Documents</div>
             <div className="text-2xl font-bold">{stats?.patientsWithDocuments || 0}</div>
-            <div className="text-sm text-green-600">{Math.round((stats?.patientsWithDocuments / stats?.totalPatients) * 100) || 0}% coverage</div>
+            <div className="text-sm text-green-600">
+              {Math.round((stats?.patientsWithDocuments / stats?.totalPatients) * 100) || 0}% coverage
+            </div>
+
           </div>
 
-          <div className="bg-white rounded-lg border p-4">
-            <div className="text-sm text-gray-500 mb-1">Reports Generated</div>
-            <div className="text-2xl font-bold">1,254</div>
-            <div className="text-sm text-red-600">↓ -2% from last month</div>
-          </div>
-        </div>
+          {/* ✅ Integrated Dynamic ReportsSummaryCard */}
+          <ReportsSummaryCard />
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div></div> {/* Spacer for the first column */}
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-500 mb-1">System Uptime</div>
             <div className="text-2xl font-bold">99.8%</div>
             <div className="text-sm text-green-600">● Excellent</div>
+          </div>
+
+          <div className="bg-white rounded-lg border p-4">
+            <div className="text-sm text-gray-500 mb-1">Total Appointments</div>
+            <div className="text-2xl font-bold">{stats?.totalAppointments || 0}</div>
           </div>
         </div>
       </div>
@@ -98,7 +129,7 @@ export default function Dashboard() {
               <div className="text-sm text-gray-600">View and manage patient records</div>
             </Link>
             <Link 
-              to="/reports" 
+              to="/reports/gen/land" 
               className="block p-3 border rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="font-medium">Reports</div>

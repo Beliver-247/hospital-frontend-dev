@@ -2,10 +2,9 @@
 import { NavLink } from 'react-router-dom';
 
 const reportsNavItems = [
-  { to: '/reports', label: 'Generate Reports', icon: '📊' },
+  { to: '/reports', label: 'Dashboard', icon: '📈' },
+  { to: '/reports/gen/land', label: 'Generate Reports', icon: '📊' },
   { to: '/reports/history', label: 'Report History', icon: '📋' },
-  { to: '/reports/templates', label: 'Report Templates', icon: '📄' },
-  { to: '/reports/analytics', label: 'Report Analytics', icon: '📈' },
 ];
 
 const healthcareNavItems = [
@@ -24,13 +23,13 @@ export default function ReportsSidebar() {
     <aside className="w-64 bg-white border-r shrink-0 hidden md:flex md:flex-col">
       {/* Header */}
       <div className="px-4 py-4 border-b">
-        <div className="flex items-center gap-2">
+        <NavLink className="flex items-center gap-2" to="/">
           <div className="h-8 w-8 rounded-full bg-blue-600 grid place-items-center text-white font-bold">H</div>
           <div>
             <div className="font-semibold">HealthCare</div>
             <div className="text-xs text-gray-500">Reports System</div>
           </div>
-        </div>
+        </NavLink>
       </div>
 
       {/* Reports Navigation */}

@@ -10,7 +10,7 @@ export default function PatientTopbar() {
   return (
     <header className="bg-white/80 backdrop-blur border-b h-14 flex items-center">
       <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <Link to="/PatientDash" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-blue-600 text-white grid place-items-center font-semibold">🏥</div>
           <span className="font-semibold">MediCare</span>
         </Link>
