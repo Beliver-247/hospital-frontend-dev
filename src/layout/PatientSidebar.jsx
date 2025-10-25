@@ -47,8 +47,6 @@ export default function PatientSidebar() {
       </Section>
 
       <Section title="Account">
-        {/* Account section header for clarity */}
-        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">Account</div>
         <Item to="#" icon="⚙️" label="Profile Settings" />
         <Item to="/payments" icon="💳" label="Payments" active={pathname.startsWith("/payments")} />
         <Item to="#" icon="🔔" label="Notifications" />
