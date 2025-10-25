@@ -37,7 +37,6 @@ export default function PatientSidebar() {
         <Item to="/PatientDash" icon="🏠" label="Dashboard" active={pathname.startsWith("/PatientDash")} />
         <Item to="/appointments" icon="🗓️" label="Appointments" active={pathname.startsWith("/appointments")} />
         <Item to="/find-doctors" icon="👩‍⚕️" label="Doctors" active={pathname.startsWith("/find-doctors")} />
-        <Item to="#" icon="📄" label="Medical Records" />
       </Section>
 
       <Section title="Health">
