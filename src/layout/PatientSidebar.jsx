@@ -36,8 +36,7 @@ export default function PatientSidebar() {
       <Section title="Main">
         <Item to="/PatientDash" icon="🏠" label="Dashboard" active={pathname.startsWith("/PatientDash")} />
         <Item to="/appointments" icon="🗓️" label="Appointments" active={pathname.startsWith("/appointments")} />
-        <Item to="#" icon="👩‍⚕️" label="Doctors" />
-        <Item to="#" icon="📄" label="Medical Records" />
+        <Item to="/find-doctors" icon="👩‍⚕️" label="Doctors" active={pathname.startsWith("/find-doctors")} />
       </Section>
 
       <Section title="Health">
@@ -47,8 +46,6 @@ export default function PatientSidebar() {
       </Section>
 
       <Section title="Account">
-        {/* Account section header for clarity */}
-        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">Account</div>
         <Item to="#" icon="⚙️" label="Profile Settings" />
         <Item to="/payments" icon="💳" label="Payments" active={pathname.startsWith("/payments")} />
         <Item to="#" icon="🔔" label="Notifications" />

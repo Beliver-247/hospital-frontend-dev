@@ -6,11 +6,16 @@ import { getSlots, createAppointment } from "../api/appointments.api";
 import { ymdLocal, fmt } from "../api/time";
 import DateInput from "../components/DateInput";
 import SlotPicker from "../components/SlotPicker";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 /** Simple inline stepper to avoid extra deps */
 function Stepper({ step }) {
-  const labels = ["Select Specialization", "Choose Doctor & Time", "Add Notes & Confirm", "Confirmation"];
+  const labels = [
+    "Select Specialization",
+    "Choose Doctor & Time",
+    "Add Notes & Confirm",
+    "Confirmation",
+  ];
   return (
     <div className="flex items-center justify-center gap-4 py-2">
       {labels.map((label, i) => {
@@ -27,7 +32,9 @@ function Stepper({ step }) {
               {idx}
             </div>
             <div className="hidden sm:block text-sm text-gray-700">{label}</div>
-            {i < labels.length - 1 && <div className="w-6 sm:w-12 h-px bg-gray-300" />}
+            {i < labels.length - 1 && (
+              <div className="w-6 sm:w-12 h-px bg-gray-300" />
+            )}
           </div>
         );
       })}
@@ -38,6 +45,11 @@ function Stepper({ step }) {
 export default function Schedule() {
   const nav = useNavigate();
   const qc = useQueryClient();
+  const location = useLocation();
+
+  // Presets coming from FindDoctors: { preset: { doctorId, doctorType, date }, gotoStep }
+  const preset = location.state?.preset || null;
+  const gotoStep = location.state?.gotoStep || null;
 
   // --- wizard state
   const [step, setStep] = useState(1);
@@ -51,6 +63,14 @@ export default function Schedule() {
   const [notes, setNotes] = useState("");
   const [firstVisit, setFirstVisit] = useState(true);
   const [useInsurance, setUseInsurance] = useState(false);
+
+  // Apply preset doctorType/date and optionally jump to step 2
+  useEffect(() => {
+    if (preset?.date) setDate(preset.date);
+    if (preset?.doctorType) setDoctorType(preset.doctorType);
+    if (gotoStep === 2) setStep(2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
 
   // --- Step 1: types
   function selectType(t) {
@@ -67,16 +87,28 @@ export default function Schedule() {
     enabled: step >= 2 && !!doctorType,
   });
 
+  // When doctors load and a preset doctorId exists, preselect that doctor
+  useEffect(() => {
+    if (!doctorsQ.data || !preset?.doctorId) return;
+    const match = (doctorsQ.data || []).find((d) => d._id === preset.doctorId);
+    if (match) setDoctor(match);
+  }, [doctorsQ.data, preset?.doctorId]);
+
   const slotsQ = useQuery({
     queryKey: ["slots", doctor?._id, date, 30],
     queryFn: () => getSlots(doctor._id, date, 30),
     enabled: step >= 2 && !!doctor?._id && !!date,
   });
 
+  // When slots load and a preset slot is provided, preselect it
   useEffect(() => {
-    // reset slot when date or doctor changes
-    setSlot(null);
-  }, [date, doctor?._id]);
+    if (!preset?.slotStart || !slotsQ.data?.slots) return;
+    const match = slotsQ.data.slots.find(
+      (s) => s.start === preset.slotStart && s.end === preset.slotEnd
+    );
+    if (match) setSlot(match);
+  }, [slotsQ.data?.slots, preset?.slotStart, preset?.slotEnd]);
+
 
   const slots = useMemo(() => slotsQ.data?.slots || [], [slotsQ.data]);
 
@@ -128,7 +160,9 @@ export default function Schedule() {
         <div className="bg-white rounded-2xl shadow-sm border">
           <div className="px-4 py-3 border-b">
             <div className="font-medium">Select Doctor by Specialization</div>
-            <div className="text-sm text-gray-500">Choose the medical specialty you need</div>
+            <div className="text-sm text-gray-500">
+              Choose the medical specialty you need
+            </div>
           </div>
           <div className="p-4 space-y-2">
             {DOCTOR_TYPES.map((t) => (
@@ -137,7 +171,9 @@ export default function Schedule() {
                 onClick={() => selectType(t)}
                 className={[
                   "w-full text-left bg-white border rounded-xl px-4 py-3 hover:bg-blue-50",
-                  doctorType === t ? "border-blue-400 ring-1 ring-blue-200 bg-blue-50" : "border-gray-200",
+                  doctorType === t
+                    ? "border-blue-400 ring-1 ring-blue-200 bg-blue-50"
+                    : "border-gray-200",
                 ].join(" ")}
               >
                 <div className="font-medium">{t}</div>
@@ -183,7 +219,9 @@ export default function Schedule() {
               {doctorsQ.isLoading ? (
                 <div className="text-sm text-gray-500">Loading doctors…</div>
               ) : (doctorsQ.data || []).length === 0 ? (
-                <div className="text-sm text-gray-500">No doctors for this specialization.</div>
+                <div className="text-sm text-gray-500">
+                  No doctors for this specialization.
+                </div>
               ) : (
                 <div className="grid sm:grid-cols-2 gap-3">
                   {doctorsQ.data.map((d) => {
@@ -194,11 +232,17 @@ export default function Schedule() {
                         onClick={() => setDoctor(d)}
                         className={[
                           "text-left p-3 rounded-xl border hover:bg-blue-50",
-                          active ? "border-blue-500 bg-blue-50" : "border-gray-200",
+                          active
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200",
                         ].join(" ")}
                       >
-                        <div className="font-medium">{d.name || "Dr. (Unnamed)"}</div>
-                        <div className="text-xs text-gray-600 mt-0.5">{d.doctorType}</div>
+                        <div className="font-medium">
+                          {d.name || "Dr. (Unnamed)"}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-0.5">
+                          {d.doctorType}
+                        </div>
                       </button>
                     );
                   })}
@@ -213,10 +257,20 @@ export default function Schedule() {
                 <DateInput value={date} onChange={(v) => setDate(v)} />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm mb-1">Available Time Slots</label>
-                {(!doctor || slotsQ.isFetching) && <div className="text-sm text-gray-500">Select a doctor to load slots…</div>}
+                <label className="block text-sm mb-1">
+                  Available Time Slots
+                </label>
+                {(!doctor || slotsQ.isFetching) && (
+                  <div className="text-sm text-gray-500">
+                    Select a doctor to load slots…
+                  </div>
+                )}
                 {doctor && (
-                  <SlotPicker slots={slots} selected={slot} onSelect={setSlot} />
+                  <SlotPicker
+                    slots={slots}
+                    selected={slot}
+                    onSelect={setSlot}
+                  />
                 )}
               </div>
             </div>
@@ -225,14 +279,18 @@ export default function Schedule() {
             {doctor && slot && (
               <div className="border rounded-xl p-3 bg-blue-50 border-blue-200">
                 <div className="text-sm">
-                  Selected: <span className="font-medium">{doctor.name}</span> — {fmt(slot.start)} to {fmt(slot.end)} ({doctor.doctorType})
+                  Selected: <span className="font-medium">{doctor.name}</span> —{" "}
+                  {fmt(slot.start)} to {fmt(slot.end)} ({doctor.doctorType})
                 </div>
               </div>
             )}
 
             {/* Actions */}
             <div className="flex justify-between pt-2">
-              <button onClick={back} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+              <button
+                onClick={back}
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+              >
                 ← Back to Specialization
               </button>
               <button
@@ -252,12 +310,16 @@ export default function Schedule() {
         <div className="bg-white rounded-2xl shadow-sm border">
           <div className="px-4 py-3 border-b">
             <div className="font-medium">Add Notes & Confirm</div>
-            <div className="text-sm text-gray-500">Provide additional information for your appointment</div>
+            <div className="text-sm text-gray-500">
+              Provide additional information for your appointment
+            </div>
           </div>
 
           <div className="p-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium">Reason for Visit (Optional)</label>
+              <label className="block text-sm font-medium">
+                Reason for Visit (Optional)
+              </label>
               <textarea
                 className="mt-1 w-full border rounded-lg px-3 py-2"
                 rows={3}
@@ -268,7 +330,9 @@ export default function Schedule() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium">Additional Notes</label>
+              <label className="block text-sm font-medium">
+                Additional Notes
+              </label>
               <textarea
                 className="mt-1 w-full border rounded-lg px-3 py-2"
                 rows={3}
@@ -280,17 +344,28 @@ export default function Schedule() {
 
             <div className="flex gap-3">
               <label className="inline-flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={firstVisit} onChange={(e) => setFirstVisit(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={firstVisit}
+                  onChange={(e) => setFirstVisit(e.target.checked)}
+                />
                 First visit to this doctor
               </label>
               <label className="inline-flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={useInsurance} onChange={(e) => setUseInsurance(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={useInsurance}
+                  onChange={(e) => setUseInsurance(e.target.checked)}
+                />
                 Use insurance coverage
               </label>
             </div>
 
             <div className="flex justify-between pt-2">
-              <button onClick={back} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+              <button
+                onClick={back}
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+              >
                 ← Back to Doctor Selection
               </button>
               <button
@@ -310,7 +385,9 @@ export default function Schedule() {
         <div className="bg-white rounded-2xl shadow-sm border">
           <div className="px-4 py-3 border-b">
             <div className="font-medium">Appointment Confirmation</div>
-            <div className="text-sm text-gray-500">Your appointment has been successfully scheduled</div>
+            <div className="text-sm text-gray-500">
+              Your appointment has been successfully scheduled
+            </div>
           </div>
           <div className="p-4 space-y-4">
             <div className="rounded-xl bg-green-50 border border-green-200 p-3 text-green-800">

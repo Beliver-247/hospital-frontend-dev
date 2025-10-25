@@ -67,13 +67,13 @@ export default function PatientDash() {
           desc="Schedule a new appointment with your preferred doctor"
         />
         <ActionCard
-          to="#"
-          icon="📄"
-          title="Medical Records"
-          desc="Access your medical history and test results"
+          to="/appointments"
+          icon="🗓️"
+          title="My Appointments"
+          desc="Check Your Sheduled appointments Here"
         />
         <ActionCard
-          to="#"
+          to="/find-doctors"
           icon="🔎"
           title="Find Doctors"
           desc="Search for specialists and healthcare providers"

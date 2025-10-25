@@ -42,3 +42,22 @@ export async function listDoctorsByType(doctorType) {
   });
   return Array.isArray(data) ? data : data.items || [];
 }
+
+export async function listDoctors({ doctorType } = {}) {
+  try {
+    const params = { role: "DOCTOR" };
+    if (doctorType) params.doctorType = doctorType;
+    const { data } = await client.get("/users", { params });
+    const items = Array.isArray(data) ? data : data?.items || [];
+    // Defensive: only return expected fields
+    return items.map(d => ({
+      _id: d._id,
+      name: d.name || "Doctor",
+      doctorType: d.doctorType || "",
+      email: d.email || "",
+    }));
+  } catch (e) {
+    console.error("listDoctors error", e);
+    throw e;
+  }
+}
