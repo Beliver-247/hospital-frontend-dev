@@ -73,7 +73,7 @@ export default function PatientDash() {
           desc="Access your medical history and test results"
         />
         <ActionCard
-          to="#"
+          to="/find-doctors"
           icon="🔎"
           title="Find Doctors"
           desc="Search for specialists and healthcare providers"

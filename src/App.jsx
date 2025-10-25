@@ -25,6 +25,7 @@ import PatientLayout from "./layout/PatientLayout.jsx";
 import AdDashboard from "./pages/Reports/AdDashboard.jsx";
 import AppointmentsReports from "./pages/AppointmentsReports.jsx";
 import ReportsLandingPage from "./pages/Reports/ReportsLandingPage.jsx";
+import FindDoctors from "./pages/FindDoctors.jsx";
 
 const qc = new QueryClient();
 
@@ -56,6 +57,8 @@ export default function App() {
                 path="/appointments/:id"
                 element={<AppointmentDetails />}
               />
+              <Route path="/find-doctors" element={<FindDoctors />} />
+
               {/* Patient Payments */}
               <Route path="/payments" element={<Payments />} />
               <Route path="/payments/credit-card" element={<CreditCardPayment />} />
