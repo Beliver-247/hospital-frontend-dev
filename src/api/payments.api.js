@@ -2,7 +2,7 @@ import { API } from './api';
 
 // Initiate card payment: sends OTP to patient email
 export async function initiateCardPayment(payload) {
-  // payload: { breakdown, currency, card, patientId, doctorId?, notes? }
+  // payload: { breakdown, currency, card, patientId, doctorId?, appointmentId?, notes? }
   const { data } = await API.post('/payments/card/initiate', payload);
   return data; // { paymentId, otpRefId, devOtpCode?, otpSentTo, expiresAt }
 }

@@ -69,16 +69,20 @@ function CardBrandIcons() {
 export default function CreditCardPayment() {
   const location = useLocation();
   const navigate = useNavigate();
-  // Optional incoming total from navigation state
+  // Optional incoming data from navigation state (e.g., from appointment creation)
   const incomingTotal = location.state?.total;
+  const incomingAppointmentId = location.state?.appointmentId;
+  const incomingDoctorId = location.state?.doctorId;
+  const incomingBreakdown = location.state?.breakdown;
 
   // Patient/Doctor will be derived server-side. Keep fields hidden for now.
   const [patientId] = useState('');
-  const [doctorId] = useState('');
+  const [doctorId] = useState(incomingDoctorId || '');
+  const [appointmentId] = useState(incomingAppointmentId || '');
   const [currency, setCurrency] = useState('LKR');
   const [notes, setNotes] = useState('');
 
-  const [breakdown, setBreakdown] = useState({
+  const [breakdown, setBreakdown] = useState(incomingBreakdown || {
     consultationFee: 1000,
     labTests: 500,
     prescription: 250,
@@ -123,7 +127,15 @@ export default function CreditCardPayment() {
     setSuccess('');
     setLoading(true);
     try {
-      const payload = { breakdown, currency, card, patientId: patientId || undefined, doctorId: doctorId || undefined, notes };
+      const payload = { 
+        breakdown, 
+        currency, 
+        card, 
+        patientId: patientId || undefined, 
+        doctorId: doctorId || undefined, 
+        appointmentId: appointmentId || undefined, // Include appointmentId
+        notes 
+      };
       const out = await initiateCardPayment(payload);
       setPaymentId(out.paymentId);
       setOtpRefId(out.otpRefId);
@@ -182,6 +194,16 @@ export default function CreditCardPayment() {
     <div className="p-6">
       {error ? <Toast kind="error" msg={error} /> : null}
       {success ? <Toast kind="success" msg={success} /> : null}
+      
+      {/* Show appointment info banner if paying for appointment */}
+      {appointmentId && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            💳 <strong>Appointment Payment</strong> - You are making a payment to confirm your appointment.
+          </p>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold">Credit Card Payment</h2>

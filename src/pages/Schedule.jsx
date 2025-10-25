@@ -317,6 +317,13 @@ export default function Schedule() {
               ✅ Appointment Successfully Confirmed!
             </div>
 
+            {/* Payment Reminder Banner */}
+            <div className="rounded-xl bg-yellow-50 border border-yellow-200 p-3">
+              <div className="text-sm text-yellow-800">
+                <span className="font-medium">💳 Payment Required:</span> Please complete payment to finalize your appointment.
+              </div>
+            </div>
+
             <div className="rounded-xl border p-4">
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
                 <div><span className="font-medium">Doctor:</span> {confirmation.doctor?.name || doctor?.name}</div>
@@ -324,14 +331,36 @@ export default function Schedule() {
                 <div><span className="font-medium">Date & Time:</span> {fmt(confirmation.start)} – {fmt(confirmation.end)}</div>
                 <div><span className="font-medium">Duration:</span> 30 minutes</div>
                 <div><span className="font-medium">Appointment ID:</span> {confirmation.appointmentId}</div>
+                <div><span className="font-medium">Payment Status:</span> <span className="text-red-600">Unpaid</span></div>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2">
-              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white" onClick={() => nav("/PatientDash")}>
+              <button 
+                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium"
+                onClick={() => nav("/payments", {
+                  state: {
+                    appointmentId: confirmation._id || confirmation.appointmentId,
+                    doctorId: confirmation.doctor?._id || doctor?._id,
+                    doctorName: confirmation.doctor?.name || doctor?.name,
+                    appointmentTime: fmt(confirmation.start),
+                    total: 1800,
+                    breakdown: {
+                      consultationFee: 1000,
+                      labTests: 500,
+                      prescription: 250,
+                      processingFee: 50,
+                      other: 0
+                    }
+                  }
+                })}
+              >
+                💳 Pay Now
+              </button>
+              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700" onClick={() => nav("/PatientDash")}>
                 ← Back to Dashboard
               </button>
-              <button className="px-4 py-2 rounded-lg bg-gray-100" onClick={() => nav(`/appointments/${confirmation.appointmentId}`)}>
+              <button className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200" onClick={() => nav(`/appointments/${confirmation.appointmentId}`)}>
                 View Details
               </button>
             </div>
